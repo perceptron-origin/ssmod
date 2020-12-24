@@ -1,2 +1,0 @@
-# ssmod
-State-space model
