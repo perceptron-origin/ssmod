@@ -1,6 +1,7 @@
 """
 Linear Algebra Module
 """
+from typing import Tuple, Union
 from numpy import ndarray, asarray
 from numpy.linalg import cholesky, inv
 
@@ -25,7 +26,7 @@ class CovarianceMatrix:
         self._inv_sqrt_mat = inv(self._sqrt_mat)
 
     @property
-    def shape(self) -> int:
+    def shape(self) -> Tuple[int, int]:
         return self.mat.shape
 
     @property
@@ -50,3 +51,9 @@ class CovarianceMatrix:
 
     def __repr__(self) -> str:
         return f"CovarianceMatrix(dim={self.dim})"
+
+
+def ascovmat(mat: Union[ndarray, CovarianceMatrix]) -> CovarianceMatrix:
+    if not isinstance(mat, CovarianceMatrix):
+        mat = CovarianceMatrix(mat)
+    return mat

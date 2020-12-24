@@ -6,6 +6,7 @@ from numpy import allclose, eye
 from numpy.random import seed, randn
 from ssmod.linalg import CovarianceMatrix
 
+
 # pylint: disable=redefined-outer-name
 
 
