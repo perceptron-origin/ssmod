@@ -1,7 +1,7 @@
 """
 Linear Algebra Module
 """
-from numpy import ndarray
+from numpy import ndarray, asarray
 from numpy.linalg import cholesky, inv
 
 
@@ -14,14 +14,15 @@ class CovarianceMatrix:
     """
 
     def __init__(self, mat: ndarray):
+        mat = asarray(mat)
         if mat.ndim != 2:
             raise ValueError("`mat` must be a two dimensional array.")
         if mat.shape[0] != mat.shape[1]:
             raise ValueError("`mat` must be a square matrix.")
 
-        self.mat = mat
-        self.sqrt_mat = cholesky(self.mat)
-        self.inv_sqrt_mat = inv(self.sqrt_mat)
+        self._mat = mat
+        self._sqrt_mat = cholesky(self._mat)
+        self._inv_sqrt_mat = inv(self._sqrt_mat)
 
     @property
     def shape(self) -> int:
@@ -30,6 +31,22 @@ class CovarianceMatrix:
     @property
     def dim(self) -> int:
         return self.mat.shape[0]
+
+    @property
+    def mat(self) -> ndarray:
+        return self._mat
+
+    @mat.setter
+    def mat(self, mat: ndarray):
+        self.__init__(mat)
+
+    @property
+    def sqrt_mat(self) -> ndarray:
+        return self._sqrt_mat
+
+    @property
+    def inv_sqrt_mat(self) -> ndarray:
+        return self._inv_sqrt_mat
 
     def __repr__(self) -> str:
         return f"CovarianceMatrix(dim={self.dim})"
