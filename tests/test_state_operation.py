@@ -13,9 +13,7 @@ from ssmod.state import State, StateOperation
 @pytest.fixture
 def state():
     seed(123)
-    x = randn(4)
-    y = randn(3)
-    return State(x, y)
+    return State(val=randn(4))
 
 
 @pytest.mark.parametrize("opt_mat", [ones(4)])
@@ -48,4 +46,4 @@ def test_default_values(opt_mat):
 @pytest.mark.parametrize("opt_mat", [ones((1, 4))])
 def test_call(opt_mat, state):
     opt = StateOperation(opt_mat)
-    assert allclose(opt(state), sum(state.x))
+    assert allclose(opt(state), sum(state.val))

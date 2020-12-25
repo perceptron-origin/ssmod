@@ -16,19 +16,11 @@ def x():
     return randn(3)
 
 
-@pytest.fixture
-def y():
-    seed(456)
-    return randn(2)
+def test_state_ref(x):
+    state = State(val=x)
+    assert shares_memory(x, state.val)
 
 
-def test_state_ref(x, y):
-    state = State(x, y)
-    assert shares_memory(x, state.x)
-    assert shares_memory(y, state.y)
-
-
-def test_state_dim(x, y):
-    state = State(x, y)
-    assert state.dim_x == x.size
-    assert state.dim_y == y.size
+def test_state_dim(x):
+    state = State(val=x)
+    assert state.dim == x.size
