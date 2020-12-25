@@ -1,30 +1,44 @@
 """
 State Module
 """
-from typing import Callable, Tuple
-from numpy import ndarray, asarray, identity
+from typing import Callable, Tuple, Union
+
+from numpy import asarray, identity, ndarray, vstack
+
+from ssmod.data import Data
 from ssmod.linalg import CovarianceMatrix, ascovmat
+from ssmod.utils import (get_default_gaussian, get_default_uniform,
+                         process_gaussian, process_uniform, quadratic_fun)
 
 
-class State:
+class State(Data):
     """
     This class store the state information
     """
 
-    def __init__(self, x: ndarray, y: ndarray):
-        self.x = asarray(x).ravel()
-        self.y = asarray(y).ravel()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.bounds = get_default_uniform(self.dim)
+        self.prior = get_default_gaussian(self.dim)
+        self.posterior = None
 
-    @property
-    def dim_x(self) -> int:
-        return self.x.size
+    def set_bounds(self,
+                   lb: Union[float, ndarray],
+                   ub: Union[float, ndarray]):
+        self.bounds = vstack(process_uniform(lb, ub, self.dim))
 
-    @property
-    def dim_y(self) -> int:
-        return self.y.size
+    def set_prior(self,
+                  mean: Union[float, ndarray],
+                  sd: Union[float, ndarray]):
+        self.prior = vstack(process_gaussian(mean, sd, self.dim))
+
+    def set_posterior(self,
+                      mean: Union[float, ndarray],
+                      sd: Union[float, ndarray]):
+        self.posterior = vstack(process_gaussian(mean, sd, self.dim))
 
     def __repr__(self) -> str:
-        return f"State(dim_x={self.dim_x}, dim_y={self.dim_y})"
+        return f"State(dim={self.dim})"
 
 
 class StateOperation:
@@ -54,11 +68,7 @@ class StateOperation:
         return self.opt_mat.shape
 
     def __call__(self, state: State) -> ndarray:
-        return self.opt_mat.dot(state.x)
+        return self.opt_mat.dot(state.val)
 
     def __repr__(self) -> str:
         return f"StateOperation(shape={self.shape})"
-
-
-def quadratic_fun(x: ndarray) -> float:
-    return 0.5*sum(x**2)
